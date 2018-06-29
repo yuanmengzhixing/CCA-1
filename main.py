@@ -79,6 +79,13 @@ def main(args):
         vectors1_val = vectors1_trainval[-VAL_SIZE:]
         vectors2_val = vectors2_trainval[-VAL_SIZE:]
         vectors1_test, vectors2_test = dataloader.load_mnist(split="test")
+    if dataset_name == "mnist2":
+        vectors1_trainval, vectors2_trainval = dataloader.load_mnist2(split="train")
+        vectors1_train = vectors1_trainval[:-VAL_SIZE]
+        vectors2_train = vectors2_trainval[:-VAL_SIZE]
+        vectors1_val = vectors1_trainval[-VAL_SIZE:]
+        vectors2_val = vectors2_trainval[-VAL_SIZE:]
+        vectors1_test, vectors2_test = dataloader.load_mnist2(split="test")
     else:
         utils.logger.debug("[data] Error: Unknown dataset_name=%s" % dataset_name)
         sys.exit(-1)
