@@ -3,11 +3,9 @@
 import logging
 from logging import getLogger, Formatter, StreamHandler, DEBUG
 import os
-import shutil
 import sys
 
 import numpy as np
-from chainer import cuda, optimizers, Variable
 
 ###############################
 # logging
@@ -28,38 +26,6 @@ def set_logger(filename):
             logger.debug("[utils.set_logger] Done.")
             sys.exit(0)
     logging.basicConfig(level=DEBUG, format="%(message)s", filename=filename, filemode="w")
-
-############################
-# NN
-
-def convert_ndarray_to_variable(xs, seq):
-    """
-    :type xs: numpy.ndarray of shape (N, L)
-    :rtype: L-length list of Variable(shae=(N,)) or Variable(shape=(N,L))
-    """
-    if seq:
-        return [Variable(cuda.cupy.asarray(xs[:,j]))
-                for j in xrange(xs.shape[1])]
-    else:
-        return Variable(cuda.cupy.asarray(xs))
-
-def get_optimizer(name="smorms3"):
-    """
-    :type name: str
-    :rtype: chainer.Optimizer
-    """
-    if name == "adadelta":
-        opt = optimizers.AdaDelta()
-    elif name == "adam":
-        opt = optimizers.Adam()
-    elif name == "rmsprop":
-        opt = optimizers.RMSprop()
-    elif name == "smorms3":
-        opt = optimizers.SMORMS3()
-    else:
-        logger.debug("[utils.get_optimizer;error] Optimizer name %s is not found." % name)
-        sys.exit(-1)
-    return opt
 
 ############################
 # others

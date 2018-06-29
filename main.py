@@ -17,13 +17,14 @@ def evaluate(cca, vectors1, vectors2):
     """
     :type cca: sklearn.cross_decomposition.CCA
     :type vectors1: numpy.ndarray(shape=(N,D1), dtype=np.float32)
-    :type vectors2: numpy.ndarray(shape=(N,D1), dtype=np.float32)
+    :type vectors2: numpy.ndarray(shape=(N,D2), dtype=np.float32)
     :rtype: float
     """
     Y1, Y2 = cca.transform(vectors1, vectors2) # (N, D), (N, D)
+
     Y1 = Y1 / np.linalg.norm(Y1, axis=1)[:,None] # (N, D)
     Y2 = Y2 / np.linalg.norm(Y2, axis=1)[:,None] # (N, D)
-    sim_mat = np.dot(Y1, Y2.T) # (N, N)
+    sim_mat = np.dot(Y1, Y2.T) # (N, N), cosine similarity
 
     corr = np.sum(np.diag(sim_mat)) / float(len(sim_mat))
 
@@ -32,7 +33,7 @@ def evaluate(cca, vectors1, vectors2):
         sim_vec = sim_mat[data_i]
         order = (-sim_vec).argsort()
         ranks = order.argsort()
-        ranks += 1
+        ranks += 1 # ranking order is 1, 2, 3, 4, ...
         mean_rank += ranks[data_i]
     mean_rank /= float(len(sim_mat))
 
@@ -105,18 +106,18 @@ def main(args):
         utils.logger.debug("[info] Fitting ...")
         cca.fit(vectors1_train, vectors2_train)
         corr, mean_rank = evaluate(cca, vectors1_val, vectors2_val)
-        utils.logger.debug("[validation] Correlation coefficients=%f, Mean Rank=%f" % \
+        utils.logger.debug("[validation] Correlation=%f, Mean Rank=%f" % \
                 (corr, mean_rank))
         joblib.dump(cca, path_snapshot, compress=True)
         utils.logger.debug("[info] Saved.")
     elif mode == "evaluation":
         # Validation
         corr, mean_rank = evaluate(cca, vectors1_val, vectors2_val)
-        utils.logger.debug("[validation] Correlation coefficients=%f, Mean Rank=%f" % \
+        utils.logger.debug("[validation] Correlation=%f, Mean Rank=%f" % \
                 (corr, mean_rank))
         # Test
         corr, mean_rank = evaluate(cca, vectors1_test, vectors2_test)
-        utils.logger.debug("[test] Correlation coefficients=%f, Mean Rank=%f" % \
+        utils.logger.debug("[test] Correlation=%f, Mean Rank=%f" % \
                 (corr, mean_rank))
     elif mode == "analysis":
         pass
@@ -131,3 +132,4 @@ if __name__ == "__main__":
     parser.add_argument("--mode", type=str, required=True)
     args = parser.parse_args()
     main(args)
+
