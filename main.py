@@ -18,7 +18,7 @@ def evaluate(cca, vectors1, vectors2):
     :type cca: sklearn.cross_decomposition.CCA
     :type vectors1: numpy.ndarray(shape=(N,D1), dtype=np.float32)
     :type vectors2: numpy.ndarray(shape=(N,D2), dtype=np.float32)
-    :rtype: float
+    :rtype: float, float
     """
     Y1, Y2 = cca.transform(vectors1, vectors2) # (N, D), (N, D)
 
@@ -103,13 +103,13 @@ def main(args):
 
     # Training, evaluation, or analysis
     if mode == "train":
-        utils.logger.debug("[info] Fitting ...")
+        utils.logger.debug("[training] Fitting ...")
         cca.fit(vectors1_train, vectors2_train)
         corr, mean_rank = evaluate(cca, vectors1_val, vectors2_val)
         utils.logger.debug("[validation] Correlation=%f, Mean Rank=%f" % \
                 (corr, mean_rank))
         joblib.dump(cca, path_snapshot, compress=True)
-        utils.logger.debug("[info] Saved.")
+        utils.logger.debug("[model] Saved.")
     elif mode == "evaluation":
         # Validation
         corr, mean_rank = evaluate(cca, vectors1_val, vectors2_val)
