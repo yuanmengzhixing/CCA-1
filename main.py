@@ -49,7 +49,7 @@ def main(args):
     utils.logger.debug("[args] dataset=%s" % dataset_name)
     utils.logger.debug("[args] config=%s" % path_config)
     utils.logger.debug("[args] name=%s" % trial_name)
-    utils.logger.debug("[args] mode=%s" % trial_name)
+    utils.logger.debug("[args] mode=%s" % mode)
 
     # Preparation
     config = utils.Config(path_config)
